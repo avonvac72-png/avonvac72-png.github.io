@@ -1,0 +1,9 @@
+{
+  "name": "Hearth",
+  "short_name": "Irene",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ebe4d6",
+  "theme_color": "#f3efe7",
+  "icons": [{ "src": "icon-180.png", "sizes": "180x180", "type": "image/png" }]
+}

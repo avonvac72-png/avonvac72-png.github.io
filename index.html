@@ -11,35 +11,98 @@
     p.k { letter-spacing:.2em; text-transform:uppercase; font-family:system-ui; font-size:11px; color:#b7aa96; }
     h1 { font-weight:500; font-size:2.4rem; margin:.3rem 0 .4rem; }
     .lead { font-family:system-ui; font-size:.95rem; line-height:1.5; color:#c9c0b0; margin:0 0 1.6rem; }
-    a { display:block; text-decoration:none; color:inherit; border-radius:22px; padding:1.3rem 1.4rem; margin:0 0 .9rem; }
+    a.card { display:flex; gap:14px; align-items:center; text-decoration:none; color:inherit; border-radius:22px; padding:1rem 1.15rem; margin:0 0 .75rem; }
     a.lilly { background:#fff6eb; color:#3d2c2a; }
     a.aiden { background:#1f2a20; color:#e8b14a; }
     a.hearth { background:#f4efe6; color:#2a241c; }
-    strong { display:block; font-size:1.55rem; }
-    em { display:block; margin-top:.15rem; font-style:normal; font-family:system-ui; font-size:.8rem; letter-spacing:.04em; text-transform:uppercase; opacity:.7; }
-    span { display:block; margin-top:.4rem; font-family:system-ui; font-size:.92rem; line-height:1.45; opacity:.8; }
+    .icon { width:64px; height:64px; border-radius:16px; object-fit:cover; flex:0 0 64px; }
+    strong { display:block; font-size:1.4rem; }
+    em { display:block; margin-top:.1rem; font-style:normal; font-family:system-ui; font-size:.75rem; letter-spacing:.04em; text-transform:uppercase; opacity:.7; }
+    .card span { display:block; margin-top:.3rem; font-family:system-ui; font-size:.88rem; line-height:1.4; opacity:.8; }
+    .guide { margin-top:2.2rem; background:#241f1a; border-radius:22px; padding:1.25rem 1.2rem 1.4rem; }
+    .guide h2 { font-weight:500; font-size:1.4rem; margin:.2rem 0 1rem; }
+    .step { display:flex; gap:12px; margin:0 0 .9rem; font-family:system-ui; }
+    .num { flex:0 0 28px; height:28px; border-radius:50%; background:#f4efe6; color:#1b1814; display:grid; place-items:center; font-size:13px; font-weight:700; }
+    .step p { margin:0; font-size:.92rem; line-height:1.45; color:#e7dfd2; }
+    .step b { font-weight:700; }
+    .share { display:inline-block; width:18px; height:18px; vertical-align:-3px; }
+    .dock { display:flex; gap:16px; justify-content:center; margin-top:1rem; }
+    .dock figure { margin:0; text-align:center; font-family:system-ui; font-size:11px; color:#c9c0b0; }
+    .dock img { width:58px; height:58px; border-radius:14px; display:block; margin:0 auto 6px; }
   </style>
 </head>
 <body>
   <main>
     <p class="k">Three separate homes</p>
     <h1>Who is this for?</h1>
-    <p class="lead">Each person has their own link. Open it in Safari, then Share → Add to Home Screen.</p>
-    <a class="lilly" href="lilly/">
-      <strong>Lilly</strong>
-      <em>Sparkle Time · age 3</em>
-      <span>Tickle Sparkle, pop bubbles, grow a garden, dress-up, peekaboo, rainbow, friends, band, and scribble.</span>
+    <p class="lead">Open their card in Safari, then put the icon on the home screen.</p>
+
+    <a class="card lilly" href="lilly/">
+      <img class="icon" src="icons/lilly-180.png" alt="" />
+      <div>
+        <strong>Lilly</strong>
+        <em>Sparkle Time · age 3</em>
+        <span>Bubbles, garden, dress-up, peekaboo, band, scribble.</span>
+      </div>
     </a>
-    <a class="aiden" href="aiden/">
-      <strong>Aiden</strong>
-      <em>Hero Block Academy · age 7</em>
-      <span>Build and study a block world. Real lessons on rocks, plants, power, and sky. Hero suits he earns — no fighting.</span>
+    <a class="card aiden" href="aiden/">
+      <img class="icon" src="icons/aiden-180.png" alt="" />
+      <div>
+        <strong>Aiden</strong>
+        <em>Hero Block Academy · age 7</em>
+        <span>Build, learn, earn hero suits. No fighting.</span>
+      </div>
     </a>
-    <a class="hearth" href="hearth/">
-      <strong>Irene</strong>
-      <em>Hearth · her apps</em>
-      <span>Balance weight plan, daily home workouts, recipes, budget, notes, routines, kitchen timers, meals, and lists.</span>
+    <a class="card hearth" href="hearth/">
+      <img class="icon" src="icons/irene-180.png" alt="" />
+      <div>
+        <strong>Irene</strong>
+        <em>Hearth · her apps</em>
+        <span>Balance, workouts, recipes, budget, notes, kitchen.</span>
+      </div>
     </a>
+
+    <section class="guide" id="homescreen">
+      <p class="k">iPad and iPhone</p>
+      <h2>Add the icon to the home screen</h2>
+      <div class="step">
+        <div class="num">1</div>
+        <p>Open the person’s link in <b>Safari</b>. Chrome and the in-app browser will not offer the icon.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <p>Tap <b>Share</b>
+          <svg class="share" viewBox="0 0 24 24" fill="none" stroke="#f4efe6" stroke-width="2"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg>
+          at the top on iPad, or the bottom on iPhone.
+        </p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <p>Scroll the list and tap <b>Add to Home Screen</b>.</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <p>The name should already be <b>Lilly</b>, <b>Hero Block</b>, or <b>Irene</b>. Tap <b>Add</b>.</p>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <p>Look for their icon on the home screen. Tap it like any other app.</p>
+      </div>
+      <div class="dock">
+        <figure>
+          <img src="icons/lilly-180.png" alt="" />
+          Lilly
+        </figure>
+        <figure>
+          <img src="icons/aiden-180.png" alt="" />
+          Aiden
+        </figure>
+        <figure>
+          <img src="icons/irene-180.png" alt="" />
+          Irene
+        </figure>
+      </div>
+    </section>
   </main>
 </body>
 </html>
