@@ -65,6 +65,15 @@
     .xylo { display: flex; align-items: flex-end; justify-content: center; gap: 8px; height: 260px; }
     .bar { flex: 1; max-width: 64px; border: 0; border-radius: 16px 16px 8px 8px; box-shadow: 0 6px 0 rgba(61,44,42,.15); }
     .crayons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 12px; }
+    .tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+    .tab { border: 0; background: var(--surface); border-radius: 14px; padding: 12px 6px; font-weight: 700; box-shadow: 0 4px 0 #ead6c4; }
+    .tab.on { background: var(--ink); color: var(--paper); }
+    .piano { display: flex; height: 160px; gap: 4px; }
+    .pkey { flex: 1; border: 0; background: #fff; border-radius: 0 0 12px 12px; font-weight: 800; box-shadow: 0 5px 0 #ead6c4; }
+    .drums { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .drum { min-height: 96px; border: 0; border-radius: 999px; font-weight: 800; font-size: 20px; color: #fff; }
+    .bells { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .bell { min-height: 84px; border: 0; border-radius: 999px; font-weight: 800; font-size: 22px; color: #fff; }
     .crayon { width: 52px; height: 52px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 4px 0 rgba(61,44,42,.12); }
     .crayon.on { outline: 4px solid var(--ink); }
     canvas { width: 100%; height: 300px; background: #fff; border-radius: 24px; touch-action: none; box-shadow: 0 6px 0 #ead6c4; }
@@ -130,7 +139,7 @@ const ACT = [
   ["animals","Animals","art/animals.jpg","Hello, animals!"],
   ["shapes","Shapes","art/shapes.jpg","Look at shapes!"],
   ["match","Match","art/match.jpg","Find two the same!"],
-  ["music","Music","art/music.jpg","Make a song!"],
+  ["music","Instruments","art/music.jpg","This is the instrument room. Choose piano, xylophone, drums, or bells."],
   ["draw","Draw","art/draw.jpg","Let's draw!"],
 ];
 const COLORS = [["Red","#e85d4c"],["Orange","#ef8a3c"],["Yellow","#f0c14b"],["Green","#5eae6d"],["Blue","#4a9fe0"],["Purple","#8d6bb3"],["Pink","#e8899a"],["White","#fffdf9"]];
@@ -146,7 +155,17 @@ const YAY = ["Yay!","Good job!","You did it!","Wow!","Nice!"];
 const store = JSON.parse(localStorage.getItem("sparkle-kid") || '{"stars":0,"name":"","voice":true,"awarded":[]}');
 function save(){ localStorage.setItem("sparkle-kid", JSON.stringify(store)); }
 function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),1400); }
-function speak(t){ if(!store.voice || !window.speechSynthesis) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.rate=.88; u.pitch=1.18; speechSynthesis.speak(u); }
+function speak(t){
+  if(!store.voice || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.rate=.94; u.pitch=.92;
+  const voices=speechSynthesis.getVoices();
+  const pick=voices.find(v=>/Google UK English Male|Daniel|Microsoft Ryan|Microsoft Guy|Arthur|en-GB/i.test(v.name+' '+v.lang))
+    || voices.find(v=>v.lang.toLowerCase().startsWith('en'));
+  if(pick){ u.voice=pick; u.lang=pick.lang||'en-GB'; } else u.lang='en-GB';
+  speechSynthesis.speak(u);
+}
 function award(k,n=1){ if(store.awarded.includes(k)) return; store.awarded.push(k); store.stars+=n; save(); document.getElementById("stars").textContent=store.stars; yay(); }
 function pop(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
 function yay(){
@@ -225,8 +244,47 @@ const builders = {
     row.appendChild(nb); el.appendChild(row);
   },
   music(el){
-    el.className="xylo";
-    NOTES.forEach((f,i)=>{ const b=document.createElement("button"); b.className="bar"; b.style.background=BARS[i]; b.style.height=(52+i*9)+"%"; b.onpointerdown=(e)=>{e.preventDefault();pop(b);tone(f,.5);award("music");}; el.appendChild(b); });
+    el.className="";
+    const tabs=document.createElement("div"); tabs.className="tabs";
+    const stage=document.createElement("div");
+    const kits=["Piano","Xylo","Drums","Bells"];
+    let cur="Piano";
+    function show(name){
+      cur=name; stage.innerHTML="";
+      [...tabs.children].forEach((t,i)=>t.classList.toggle("on", kits[i]===name));
+      if(name==="Piano"){
+        const row=document.createElement("div"); row.className="piano";
+        [["C",261.63],["D",293.66],["E",329.63],["F",349.23],["G",392],["A",440],["B",493.88],["C",523.25]].forEach(([n,f],i)=>{
+          const b=document.createElement("button"); b.className="pkey"; b.textContent=n;
+          b.onpointerdown=(e)=>{e.preventDefault();tone(f,.7);speak(n);award("piano");}; row.appendChild(b);
+        });
+        stage.appendChild(row);
+      } else if(name==="Xylo"){
+        const row=document.createElement("div"); row.className="xylo";
+        NOTES.forEach((f,i)=>{ const b=document.createElement("button"); b.className="bar"; b.style.background=BARS[i]; b.style.height=(52+i*9)+"%"; b.textContent=["C","D","E","F","G","A","B","C"][i];
+          b.onpointerdown=(e)=>{e.preventDefault();pop(b);tone(f,.5);speak(["C","D","E","F","G","A","B","C"][i]);award("music");}; row.appendChild(b); });
+        stage.appendChild(row);
+      } else if(name==="Drums"){
+        const row=document.createElement("div"); row.className="drums";
+        [["Boom","#3d2c2a",90],["Thump","#e85d4c",140],["Tap","#f0c14b",280],["Click","#4fb7c8",520]].forEach(([n,c,f])=>{
+          const b=document.createElement("button"); b.className="drum"; b.style.background=c; b.textContent=n;
+          b.onpointerdown=(e)=>{e.preventDefault();tone(f,.25);speak(n);award("drums");}; row.appendChild(b);
+        });
+        stage.appendChild(row);
+      } else {
+        const row=document.createElement("div"); row.className="bells";
+        [["C",523.25,"#e8899a"],["E",659.25,"#f0c14b"],["G",783.99,"#5eae6d"],["A",880,"#4fb7c8"],["C",1046.5,"#8d6bb3"],["E",1318.5,"#ffb48a"]].forEach(([n,f,c])=>{
+          const b=document.createElement("button"); b.className="bell"; b.style.background=c; b.textContent=n;
+          b.onpointerdown=(e)=>{e.preventDefault();tone(f,.9);speak(n);award("bells");}; row.appendChild(b);
+        });
+        stage.appendChild(row);
+      }
+    }
+    kits.forEach(name=>{
+      const t=document.createElement("button"); t.className="tab"; t.textContent=name;
+      t.onclick=()=>{speak(name);show(name);}; tabs.appendChild(t);
+    });
+    el.append(tabs,stage); show("Piano");
   },
   draw(el){
     el.className="";
