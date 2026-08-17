@@ -1,6 +1,6 @@
 {
   "name": "Hearth",
-  "short_name": "Irene",
+  "description": "Irene’s health and home — mood, meals, goals, walks, and Ask.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ebe4d6",
