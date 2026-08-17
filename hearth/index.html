@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Hearth" />
+  <meta name="theme-color" content="#f4efe6" />
+  <title>Hearth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Source+Sans+3:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#f4efe6; --ink:#2a241c; --muted:#8a7d6b; --paper:#fff; --chip:#e8e0d2; --line:#ddd4c4; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:"Source Sans 3",system-ui,sans-serif; }
+    h1 { font-family:Fraunces,Georgia,serif; font-weight:500; margin:0; font-size:2.4rem; }
+    header { max-width:36rem; margin:0 auto; padding:2rem 1.25rem .75rem; display:flex; justify-content:space-between; align-items:flex-end; }
+    .kicker { font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+    nav { max-width:36rem; margin:0 auto; padding:0 1.25rem; display:grid; grid-template-columns:repeat(4,1fr); gap:4px; }
+    nav button, .btn { border:0; border-radius:999px; padding:.65rem .4rem; font:600 14px "Source Sans 3",sans-serif; background:var(--chip); color:var(--ink); }
+    nav button.on, .solid { background:var(--ink); color:var(--bg); }
+    main { max-width:36rem; margin:0 auto; padding:1.25rem 1.25rem 4rem; }
+    .row { display:flex; gap:8px; }
+    input, textarea { width:100%; border:1px solid var(--line); border-radius:14px; padding:.85rem 1rem; font:inherit; background:var(--paper); }
+    textarea { min-height:20rem; line-height:1.55; }
+    li { list-style:none; display:flex; gap:10px; align-items:center; background:var(--paper); padding:.75rem .85rem; border-radius:14px; margin:.5rem 0; }
+    ul { margin:1rem 0 0; padding:0; }
+    .clock { font-family:Fraunces,serif; font-size:4rem; text-align:center; }
+    .panel { background:var(--paper); border-radius:20px; padding:1.5rem; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:1rem 0; }
+    .hidden { display:none; }
+    .done { color:var(--muted); text-decoration:line-through; }
+    .ghost { background:none; color:var(--muted); font-size:12px; font-weight:600; }
+  </style>
+</head>
+<body>
+  <header>
+    <div><p class="kicker">Grown-up space</p><h1>Hearth</h1></div>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 6px">Yours. Not the kids’.</p>
+  </header>
+  <nav>
+    <button class="on" data-tab="list">List</button>
+    <button data-tab="meals">Meals</button>
+    <button data-tab="notes">Notes</button>
+    <button data-tab="timer">Timer</button>
+  </nav>
+  <main>
+    <section id="list">
+      <form class="row" id="addForm">
+        <input id="draft" placeholder="Milk, permission slip, batteries…" />
+        <button class="btn solid" type="submit">Add</button>
+      </form>
+      <ul id="items"></ul>
+    </section>
+    <section id="meals" class="hidden">
+      <textarea id="mealsBox">Mon —
+Tue —
+Wed —
+Thu —
+Fri —
+Sat —
+Sun —</textarea>
+    </section>
+    <section id="notes" class="hidden">
+      <textarea id="notesBox" placeholder="School, doctor, the thing you don’t want to forget…"></textarea>
+    </section>
+    <section id="timer" class="hidden">
+      <div class="panel">
+        <div class="clock" id="clock">00:00</div>
+        <div class="chips" id="presets"></div>
+        <div class="row" style="justify-content:center">
+          <button class="btn solid" id="toggle">Start</button>
+          <button class="btn" id="clear">Clear</button>
+        </div>
+      </div>
+    </section>
+  </main>
+<script>
+const KEY="hearth-family-v1";
+const state = Object.assign({items:[],meals:document.getElementById("mealsBox").value,notes:""}, JSON.parse(localStorage.getItem(KEY)||"{}"));
+let seconds=0, running=false, tick;
+function save(){ localStorage.setItem(KEY, JSON.stringify({items:state.items,meals:state.meals,notes:state.notes})); }
+function renderItems(){
+  const ul=document.getElementById("items");
+  ul.innerHTML = state.items.length ? "" : "<p style='color:#8a7d6b'>Nothing here yet. Add the first thing.</p>";
+  state.items.forEach((it,i)=>{
+    const li=document.createElement("li");
+    li.innerHTML = `<input type="checkbox" ${it.done?"checked":""}><span class="${it.done?"done":""}"></span><button class="ghost">Remove</button>`;
+    li.querySelector("span").textContent=it.text;
+    li.querySelector("input").onchange=()=>{ it.done=!it.done; save(); renderItems(); };
+    li.querySelector("button").onclick=()=>{ state.items.splice(i,1); save(); renderItems(); };
+    ul.appendChild(li);
+  });
+}
+document.getElementById("addForm").onsubmit=e=>{
+  e.preventDefault();
+  const t=document.getElementById("draft").value.trim();
+  if(!t) return;
+  state.items.unshift({id:Date.now(),text:t,done:false});
+  document.getElementById("draft").value="";
+  save(); renderItems();
+};
+document.getElementById("mealsBox").value=state.meals;
+document.getElementById("notesBox").value=state.notes||"";
+document.getElementById("mealsBox").oninput=e=>{ state.meals=e.target.value; save(); };
+document.getElementById("notesBox").oninput=e=>{ state.notes=e.target.value; save(); };
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    ["list","meals","notes","timer"].forEach(id=>document.getElementById(id).classList.toggle("hidden", id!==b.dataset.tab));
+  };
+});
+function paintClock(){
+  const m=String(Math.floor(seconds/60)).padStart(2,"0");
+  const s=String(seconds%60).padStart(2,"0");
+  document.getElementById("clock").textContent=m+":"+s;
+}
+[5,10,15,20,30,45].forEach(m=>{
+  const b=document.createElement("button"); b.className="btn"; b.textContent=m+" min";
+  b.onclick=()=>{ seconds=m*60; running=true; document.getElementById("toggle").textContent="Pause"; paintClock(); };
+  document.getElementById("presets").appendChild(b);
+});
+document.getElementById("toggle").onclick=()=>{
+  running=!running;
+  document.getElementById("toggle").textContent=running?"Pause":"Start";
+};
+document.getElementById("clear").onclick=()=>{ running=false; seconds=0; paintClock(); document.getElementById("toggle").textContent="Start"; };
+setInterval(()=>{
+  if(!running||seconds<=0){ if(seconds<=0) running=false; return; }
+  seconds--; paintClock();
+  if(seconds===0){ running=false; document.getElementById("toggle").textContent="Start"; }
+},1000);
+renderItems(); paintClock();
+</script>
+</body>
+</html>
