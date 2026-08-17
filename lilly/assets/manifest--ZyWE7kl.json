@@ -1,6 +1,6 @@
 {
   "name": "Sparkle Time",
-  "short_name": "Lilly",
+  "description": "Lilly’s playroom — bubbles, garden, dress-up, and songs.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fff6eb",
