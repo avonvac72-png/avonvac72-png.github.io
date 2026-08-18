@@ -1,9 +1,9 @@
 {
-  "name": "Sparkle Time",
-  "description": "Lilly’s playroom — bubbles, garden, dress-up, and songs.",
+  "name": "Baby Piano",
+  "description": "Lilly’s piano — play along, instruments, and songs.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#fff6eb",
-  "theme_color": "#fff6eb",
+  "background_color": "#f6efe4",
+  "theme_color": "#f6efe4",
   "icons": [{ "src": "icon-180.png", "sizes": "180x180", "type": "image/png" }]
 }
